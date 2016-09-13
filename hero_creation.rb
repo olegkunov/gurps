@@ -5,6 +5,7 @@ class HeroCreation
 
   def initialize(template)
     @template = template
+    @tunings = {st: 0, dx: 0, iq: 0, ht: 0, hp: 0, wl: 0}
     @points = powerlevel
   end
 
@@ -12,29 +13,38 @@ class HeroCreation
     @template[:powerlevel]
   end
 
-  def basic_lift
-    @template[:st] ** 2 / 5
+  def calculate_stat(attr)
+    basic_stats = [:st, :dx, :ht, :iq]
+    return @template[attr] + @tunings[attr] if basic_stats.include? attr
+    case attr
+      when :bl
+        basic_st = calculate_stat(:st)
+        (basic_st * basic_st / 5).round
+      when :hp
+        calculate_stat(:st) + @tunings[:hp]
+      when :wl
+        calculate_stat(:iq) + @tunings[:wl]
+      else
+    end
   end
 
   def calculate_points
-    dev = []
-    dev << (@template[:st] - 10) << (@template[:ht] - 10) \
-        << (@template[:dx] - 10) << (@template[:iq] - 10)
-    # p dev
-    @points = powerlevel - (dev[0]+dev[1])*10 - (dev[2]+dev[3])*20
+    result = powerlevel
+    result -= (@tunings[:st]+@tunings[:ht])*10 + (@tunings[:dx]+@tunings[:iq])*20
+              + @tunings[:hp] * 2 + @tunings[:wl] * 5
+    @points = result
   end
 
-  def basic_attributes
-    {
-        st: @template[:st],
-        dx: @template[:dx],
-        iq: @template[:iq],
-        ht: @template[:ht]
+  def effective_stats
+    result = {}
+    [:st, :dx, :ht, :iq, :bl, :hp, :wl].each { |stat|
+      result[stat] = calculate_stat(stat)
     }
+    result
   end
 
-  def basic_attr_change(attr, levels)
-    @template[attr] += levels
+  def attr_change(attr, levels)
+    @tunings[attr] += levels
     calculate_points
   end
 
