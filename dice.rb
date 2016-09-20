@@ -14,4 +14,17 @@ class Dice
     (random.rand * 6).ceil * @mult + @add
   end
 
+  def to_s
+    adder =
+        case
+          when @add < 0
+            "#{@add}"
+          when @add == 0
+            ""
+          else
+            "+#{@add}"
+        end
+    "#{@mult}d#{adder}"
+  end
+
 end

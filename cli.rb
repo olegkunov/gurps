@@ -17,7 +17,6 @@ module CLI
   def attr_change(hc, input, attr_dir)
     attr = attr_dir[:attr]
     length = if attr_dir[:len] then attr_dir[:len] else 2 end
-    # coeff = if attr_dir[:dir] == :plus then 1; else -1 end
     levels = input[length..-1]
     levels =
         case
@@ -61,7 +60,7 @@ module CLI
     while continue
       p hc.effective_stats
       puts "#{hc.points} points"
-      puts 'Secondary attributes: <hp>, <wl>, <per>. <q> to exit'
+      puts 'Secondary attributes: <hp>, <wl>, <per>, <fp>. <q> to exit'
       input = gets.chop
       attr_dir =
           case input
@@ -72,6 +71,10 @@ module CLI
             when /^wl\-/ then { attr: :wl }
             when /^per\+/ then { attr: :per, len: 3 }
             when /^per\-/ then { attr: :per, len: 3 }
+            when /^fp\+/ then { attr: :fp }
+            when /^fp\-/ then { attr: :fp }
+            when /^bsp\+/ then { attr: :bsp, len: 3 }
+            when /^bsp\-/ then { attr: :bsp, len: 3 }
             else
           end
       attr_change(hc, input, attr_dir) unless attr_dir.nil?
